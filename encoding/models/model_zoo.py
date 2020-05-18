@@ -24,13 +24,37 @@ def get_model(name, **kwargs):
         The model.
     """
     models = {
-        'fcn_resnet50_pcontext': get_fcn_resnet50_pcontext,
-        'encnet_resnet50_pcontext': get_encnet_resnet50_pcontext,
-        'encnet_resnet101_pcontext': get_encnet_resnet101_pcontext,
-        'encnet_resnet50_ade': get_encnet_resnet50_ade,
-        'encnet_resnet101_ade': get_encnet_resnet101_ade,
-        'fcn_resnet50_ade': get_fcn_resnet50_ade,
-        'psp_resnet50_ade': get_psp_resnet50_ade,
+        # resnet
+        'resnet50': resnet50,
+        'resnet101': resnet101,
+        'resnet152': resnet152,
+        # resnest
+        'resnest50': resnest50,
+        'resnest101': resnest101,
+        'resnest200': resnest200,
+        'resnest269': resnest269,
+        # other segmentation backbones
+        'xception65': xception65,
+        # segmentation resnet models
+        'encnet_resnet101s_coco': get_encnet_resnet101_coco,
+        'fcn_resnet50s_pcontext': get_fcn_resnet50_pcontext,
+        'encnet_resnet50s_pcontext': get_encnet_resnet50_pcontext,
+        'encnet_resnet101s_pcontext': get_encnet_resnet101_pcontext,
+        'encnet_resnet50s_ade': get_encnet_resnet50_ade,
+        'encnet_resnet101s_ade': get_encnet_resnet101_ade,
+        'fcn_resnet50s_ade': get_fcn_resnet50_ade,
+        'psp_resnet50s_ade': get_psp_resnet50_ade,
+        # segmentation resnest models
+        'fcn_resnest50_ade': get_fcn_resnest50_ade,
+        'deeplab_resnest50_ade': get_deeplab_resnest50_ade,
+        'deeplab_resnest101_ade': get_deeplab_resnest101_ade,
+        'deeplab_resnest200_ade': get_deeplab_resnest200_ade,
+        'deeplab_resnest269_ade': get_deeplab_resnest269_ade,
+        'fcn_resnest50_pcontext': get_fcn_resnest50_pcontext,
+        'deeplab_resnest50_pcontext': get_deeplab_resnest50_pcontext,
+        'deeplab_resnest101_pcontext': get_deeplab_resnest101_pcontext,
+        'deeplab_resnest200_pcontext': get_deeplab_resnest200_pcontext,
+        'deeplab_resnest269_pcontext': get_deeplab_resnest269_pcontext,
         }
     name = name.lower()
     if name not in models:

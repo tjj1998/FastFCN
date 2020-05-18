@@ -12,3 +12,5 @@
 from .syncbn import *
 from .encoding import *
 from .customize import *
+from .splat import SplAtConv2d
+from .dropblock import *

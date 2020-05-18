@@ -19,7 +19,7 @@ from torch.autograd import Variable
 
 torch_ver = torch.__version__[:3]
 
-__all__ = ['SegmentationLosses', 'PyramidPooling', 'JPU', 'JPU_X', 'Mean']
+__all__ = ['SegmentationLosses', 'GlobalAvgPool2d', 'PyramidPooling', 'JPU', 'JPU_X', 'Mean']
 
 class SegmentationLosses(CrossEntropyLoss):
     """2D Cross Entropy Loss with Auxilary Loss"""
@@ -96,7 +96,14 @@ class Normalize(Module):
 
     def forward(self, x):
         return F.normalize(x, self.p, self.dim, eps=1e-8)
+    
+class GlobalAvgPool2d(nn.Module):
+    def __init__(self):
+        """Global average pooling over the input's spatial dimensions"""
+        super(GlobalAvgPool2d, self).__init__()
 
+    def forward(self, inputs):
+        return F.adaptive_avg_pool2d(inputs, 1).view(inputs.size(0), -1)
 
 class PyramidPooling(Module):
     """

@@ -14,7 +14,7 @@ import torch.nn.functional as F
 from torch.nn.parallel.data_parallel import DataParallel
 
 from ..nn import JPU, JPU_X
-from .. import dilated as resnet
+from .. import dilated as backbonemodels 
 from ..utils import batch_pix_accuracy, batch_intersection_union
 
 up_kwargs = {'mode': 'bilinear', 'align_corners': True}
@@ -35,13 +35,28 @@ class BaseNet(nn.Module):
         self.crop_size = crop_size
         # copying modules from pretrained models
         if backbone == 'resnet50':
-            self.pretrained = resnet.resnet50(pretrained=True, dilated=dilated,
+            self.pretrained = backbonemodels.resnet50(pretrained=True, dilated=dilated,
                                               norm_layer=norm_layer, root=root)
         elif backbone == 'resnet101':
-            self.pretrained = resnet.resnet101(pretrained=True, dilated=dilated,
+            self.pretrained = backbonemodels.resnet101(pretrained=True, dilated=dilated,
                                                norm_layer=norm_layer, root=root)
         elif backbone == 'resnet152':
-            self.pretrained = resnet.resnet152(pretrained=True, dilated=dilated,
+            self.pretrained = backbonemodels.resnet152(pretrained=True, dilated=dilated,
+                                               norm_layer=norm_layer, root=root)
+        elif backbone == 'resnest50':
+            self.pretrained = backbonemodels.resnest50(pretrained=True, dilated=dilated,
+                                               norm_layer=norm_layer, root=root)
+        elif backbone == 'resnest101':
+            self.pretrained = backbonemodels.resnest101(pretrained=True, dilated=dilated,
+                                               norm_layer=norm_layer, root=root)
+        elif backbone == 'resnest200':
+            self.pretrained = backbonemodels.resnest200(pretrained=True, dilated=dilated,
+                                               norm_layer=norm_layer, root=root)   
+        elif backbone == 'resnest269':
+            self.pretrained = backbonemodels.resnest269(pretrained=True, dilated=dilated,
+                                               norm_layer=norm_layer, root=root)
+        elif backbone == 'xception65':
+            self.pretrained = backbonemodels.xception65(pretrained=False, dilated=dilated,
                                                norm_layer=norm_layer, root=root)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
@@ -49,20 +64,24 @@ class BaseNet(nn.Module):
         self._up_kwargs = up_kwargs
         self.backbone = backbone
         self.jpu = None
-        if jpu == 'JPU':
-            self.jpu = JPU([512, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
-        elif jpu == 'JPU_X':
-            self.jpu = JPU_X([512, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
+        if 'xception' in self.backbone:
+            if jpu == 'JPU':
+               self.jpu = JPU([728, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
+            elif jpu == 'JPU_X':
+               self.jpu = JPU_X([728, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
+        else:
+            if jpu == 'JPU':
+               self.jpu = JPU([512, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
+            elif jpu == 'JPU_X':
+               self.jpu = JPU_X([512, 1024, 2048], width=512, norm_layer=norm_layer, up_kwargs=up_kwargs)
 
+        
     def base_forward(self, x):
-        x = self.pretrained.conv1(x)
-        x = self.pretrained.bn1(x)
-        x = self.pretrained.relu(x)
-        x = self.pretrained.maxpool(x)
-        c1 = self.pretrained.layer1(x)
-        c2 = self.pretrained.layer2(c1)
-        c3 = self.pretrained.layer3(c2)
-        c4 = self.pretrained.layer4(c3)
+        x = self.pretrained(x)
+        c1 = self.pretrained.layers[0]
+        c2 = self.pretrained.layers[1]
+        c3 = self.pretrained.layers[2]
+        c4 = self.pretrained.layers[3]
 
         if self.jpu:
             return self.jpu(c1, c2, c3, c4)
