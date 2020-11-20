@@ -1,3 +1,10 @@
+# new features:
+## you can use Resnest and xception as Backbone!(xception65 without pretrained)
+- resnest50
+- resnest101
+- resnest200
+- resnest269
+- xception65
 # FastFCN: Rethinking Dilated Convolution in the Backbone for Semantic Segmentation
 [[Project]](http://wuhuikai.me/FastFCNProject/)    [[Paper]](http://wuhuikai.me/FastFCNProject/fast_fcn.pdf)    [[arXiv]](https://arxiv.org/abs/1903.11816)    [[Home]](http://wuhuikai.me) 
 
